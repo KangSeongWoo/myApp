@@ -6,22 +6,38 @@
 //
 
 import UIKit
+import MapKit
+import CoreLocation
 
-class ViewController: UIViewController,UITableViewDataSource, UITableViewDelegate {
-    @IBOutlet weak var mainView: UIView?
-    @IBOutlet weak var leftView: UIView?
-    @IBOutlet weak var rightView: UIView?
+class MainViewController: UIViewController,UITableViewDataSource, UITableViewDelegate {
+    @IBOutlet weak var mapView: MKMapView!
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        mainView?.layer.borderWidth = 1
-        leftView?.layer.borderWidth = 1
-        rightView?.layer.borderWidth = 1
+        mapView.showsUserLocation = true
+        mapView.setUserTrackingMode(.follow, animated: true)
+    }
+    
+    @IBAction func openPopup(_ sender: Any) {
+        let storyboard = UIStoryboard.init(name:"PopUp", bundle:nil)
         
-        mainView?.layer.borderColor = UIColor.black.cgColor
-        leftView?.layer.borderColor = UIColor.blue.cgColor
-        rightView?.layer.borderColor = UIColor.yellow.cgColor
+        let popup = storyboard.instantiateViewController(withIdentifier: "PopUp")
+        
+        popup.modalPresentationStyle = .overCurrentContext
+        popup.modalTransitionStyle = .crossDissolve
+        
+        self.present(popup, animated: true, completion: nil)
+    }
+    
+    @IBAction func Alert_Button(_ sender: Any) {
+        let alert = UIAlertController(title : "안녕하세요", message: "하하호호하하호호하하호호", preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "Okay", style: .default)
+        
+        alert.addAction(okAction)
+        
+        present(alert, animated : true, completion:nil)
     }
     
     let arr = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
