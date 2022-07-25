@@ -9,15 +9,74 @@ import UIKit
 import MapKit
 import CoreLocation
 
-class MainViewController: UIViewController,UITableViewDataSource, UITableViewDelegate {
+import WebKit
+
+class MainViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     @IBOutlet weak var mapView: MKMapView!
+    @IBOutlet weak var dimView: UIView!
+    @IBOutlet weak var NavigationBackButton: UIBarButtonItem!
     
+    lazy var activityIndicator: UIActivityIndicatorView = {
+        // 해당 클로저에서 나중에 indicator 를 반환해주기 위해 상수형태로 선언
+        let activityIndicator = UIActivityIndicatorView()
+        
+        activityIndicator.frame = CGRect(x: 0, y: 0, width: 50, height: 50)
+        
+        activityIndicator.center = self.view.center
+        
+        if traitCollection.userInterfaceStyle == .dark {
+            activityIndicator.color = .white
+        } else {
+            activityIndicator.color = .purple
+        }
+        
+        // 기타 옵션
+        activityIndicator.layer.zPosition = 100
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.style = .large
+        
+        // stopAnimating을 걸어주는 이유는, 최초에 해당 indicator가 선언되었을 때, 멈춘 상태로 있기 위해서
+        activityIndicator.stopAnimating()
+        
+        return activityIndicator
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.view.addSubview(activityIndicator)
+        
+        hideDim()
+        
         mapView.showsUserLocation = true
         mapView.setUserTrackingMode(.follow, animated: true)
+    }
+    
+    func showDim(){
+        dimView.layer.zPosition = 10
+        dimView.layer.isHidden = false
+        NavigationBackButton.isEnabled = false
+    }
+    
+    func hideDim(){
+        dimView.layer.zPosition = 0
+        dimView.layer.isHidden = true
+        NavigationBackButton.isEnabled = true
+    }
+    
+    @IBAction func CallApiButton(_ sender: Any) {
+        
+    }
+    
+    @IBAction func showLoading(_ sender: Any) {
+        print("loading")
+        showDim()
+        activityIndicator.startAnimating()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) {
+            self.hideDim()
+            self.activityIndicator.stopAnimating()
+        }
     }
     
     @IBAction func openPopup(_ sender: Any) {
