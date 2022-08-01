@@ -15,21 +15,22 @@ class WebViewController: UIViewController,WKUIDelegate {
     
     override func viewDidLoad(){
         super.viewDidLoad()
+//
+//        let backButtonImage = UIImage(named: "xmark.png")
+//
+//        let newWidth = 30
+//        let newHeight = 30
+//        let newImageRect = CGRect(x: 0, y: 0, width: newWidth, height: newHeight)
+//        UIGraphicsBeginImageContext(CGSize(width: newWidth, height: newHeight))
+//        backButtonImage?.draw(in: newImageRect)
+//        let newImage = UIGraphicsGetImageFromCurrentImageContext()?.withRenderingMode(.alwaysOriginal)
+//        UIGraphicsEndImageContext()
+//
+//        backButton.setImage(newImage, for: .normal)
         
-        let backButtonImage = UIImage(named: "xmark.png")
-        
-        let newWidth = 30
-        let newHeight = 30
-        let newImageRect = CGRect(x: 0, y: 0, width: newWidth, height: newHeight)
-        UIGraphicsBeginImageContext(CGSize(width: newWidth, height: newHeight))
-        backButtonImage?.draw(in: newImageRect)
-        let newImage = UIGraphicsGetImageFromCurrentImageContext()?.withRenderingMode(.alwaysOriginal)
-        UIGraphicsEndImageContext()
-        
-        backButton.setImage(newImage, for: .normal)
-        
-        guard let url = URL(string:"https://golfus.info/brand.html") else {return}
+        guard let url = URL(string:"https://golfus.golf/") else {return}
         let request = URLRequest(url: url)
+        
         self.webView?.load(request)
     }
     

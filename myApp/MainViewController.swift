@@ -11,10 +11,12 @@ import CoreLocation
 
 import WebKit
 
-class MainViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class MainViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, CLLocationManagerDelegate {
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var dimView: UIView!
     @IBOutlet weak var NavigationBackButton: UIBarButtonItem!
+    
+    let locationManager = CLLocationManager()
     
     lazy var activityIndicator: UIActivityIndicatorView = {
         // 해당 클로저에서 나중에 indicator 를 반환해주기 위해 상수형태로 선언
@@ -48,10 +50,31 @@ class MainViewController: UIViewController, UITableViewDataSource, UITableViewDe
         
         hideDim()
         
-        mapView.showsUserLocation = true
-        mapView.setUserTrackingMode(.follow, animated: true)
+        self.locationManager.delegate = self
+        self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        self.locationManager.requestWhenInUseAuthorization()
+        self.locationManager.startUpdatingLocation()
+        
+        self.mapView.showsUserLocation = true                       // 내위치 보여주기
+        self.mapView.setUserTrackingMode(.follow, animated: true)   // 내위치 트래팅 하기
     }
     
+    // 새로운 위치정보 발생시 실행되는 메소드
+    func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        let location = locations.last
+            
+        // 위치정보 반환
+        let center = CLLocationCoordinate2D(latitude: location!.coordinate.latitude, longitude: location!.coordinate.longitude)
+            
+        // MKCoordinateSpan -- 지도 scale
+        let region = MKCoordinateRegion(center: center, span: MKCoordinateSpan(latitudeDelta:0.01, longitudeDelta:0.01))
+        self.mapView.setRegion(region, animated: true)
+        self.locationManager.stopUpdatingLocation()
+    }
+            
+    func locationManager(manager: CLLocationManager, didFailWithError error: NSError) {
+         print("Errors: " + error.localizedDescription)
+    }
     func showDim(){
         dimView.layer.zPosition = 10
         dimView.layer.isHidden = false
@@ -62,10 +85,6 @@ class MainViewController: UIViewController, UITableViewDataSource, UITableViewDe
         dimView.layer.zPosition = 0
         dimView.layer.isHidden = true
         NavigationBackButton.isEnabled = true
-    }
-    
-    @IBAction func CallApiButton(_ sender: Any) {
-        
     }
     
     @IBAction func showLoading(_ sender: Any) {
@@ -88,15 +107,6 @@ class MainViewController: UIViewController, UITableViewDataSource, UITableViewDe
         popup.modalTransitionStyle = .crossDissolve
         
         self.present(popup, animated: true, completion: nil)
-    }
-    
-    @IBAction func Alert_Button(_ sender: Any) {
-        let alert = UIAlertController(title : "안녕하세요", message: "하하호호하하호호하하호호", preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "Okay", style: .default)
-        
-        alert.addAction(okAction)
-        
-        present(alert, animated : true, completion:nil)
     }
     
     let arr = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
